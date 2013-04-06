@@ -92,11 +92,15 @@ minetest.register_node("civilization:factory",{
 	on_construct = function(pos)
 		local meta = minetest.env:get_meta(pos)
 		meta:set_string("formspec",
-				"size[6.5,6.5]"..
-				"list[current_name;recipe;0,3.5;3,3;]"..
-				"list[current_name;src;3.5,0;3,3;]"..
-				"list[current_name;dst;3.5,3.5;3,3;]"..
-				"list[current_player;main;0,0;3,3;]")
+				"size[6.5,7]"..
+				"label[0,0;Inventory:]"..
+				"list[current_player;main;0,0.5;3,3;]"..
+				"label[0,3.5;Craft recipe:]"..
+				"list[current_name;recipe;0,4;3,3;]"..
+				"label[3.5,0;Resources:]"..
+				"list[current_name;src;3.5,0.5;3,3;]"..
+				"label[3.5,3.5;Crafted:]"..
+				"list[current_name;dst;3.5,4;3,3;]")
 		meta:set_string("infotext", "Factory")
 		local inv = meta:get_inventory()
 		inv:set_size("src",3*3)
