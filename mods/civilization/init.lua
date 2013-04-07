@@ -134,3 +134,8 @@ minetest.register_craft({
     {'default:mese', 'default:steel_ingot', 'default:mese'},
   }
 })
+
+--give two tree so first wood tool can be crafted
+minetest.register_on_newplayer(function(player)
+	player:get_inventory():add_item('main', 'default:tree 2')
+end)
