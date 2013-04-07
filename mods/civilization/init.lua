@@ -30,7 +30,7 @@ minetest.register_item(":", {
     max_drop_level = 0,
     groupcaps = {
       fleshy = {times={[2]=0.75, [3]=0.6}, uses=0, maxlevel=1},
-      crumbly = {times={[2]=3.00, [3]=0.70}, uses=0, maxlevel=1},
+      crumbly = {times={[3]=2}, uses=0, maxlevel=1},
       snappy = {times={[3]=0.40}, uses=0, maxlevel=1},
     }
   }
