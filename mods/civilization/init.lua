@@ -1,17 +1,58 @@
---disable the crafting and shrink inventory size
-local no_craft = {}
+civilization = {}
+local mod_name = "civilization"
 
-no_craft.set_creative_formspec = function(player)
-  player:set_inventory_formspec("size[3,3]"..
-    "list[current_player;main;0,0;3,3;]")
-    player:get_inventory():set_size("main", 3*3) --NotNick's contribution
+dofile(minetest.get_modpath(mod_name).."/mods.lua")
+dofile(minetest.get_modpath(mod_name).."/register_age_node.lua")
+dofile(minetest.get_modpath(mod_name).."/register_mod_node.lua")
+
+civilization.common_age_nodes = {"default:stick"}
+
+civilization.register_age_node({
+  name = "Wood",
+  tiles = "default_tree.png",
+  nodes = {"default:tree", "default:wood", "default:stick"}
+})
+
+civilization.register_age_node({
+  name = "Stone",
+  tiles = "default_cobble.png",
+  nodes = {"default:stone", "default:cobble"}
+})
+
+civilization.register_age_node({
+  name = "Bronze",
+  tiles = "default_bronze_block.png",
+  nodes = {"default:bronze_ingot", "default:bronzeblock"}
+})
+
+civilization.register_age_node({
+  name = "Iron",
+  tiles = "default_steel_block.png",
+  nodes = {"default:steel_ingot", "default:iron_lump", "default:steelblock"}
+})
+
+civilization.register_age_node({
+  name = "Mese",
+  tiles = "default_mese_block.png",
+  nodes = {"default:mese", "default:mese_crystal", "default:mese_crystal_fragment"}
+})
+--define smaller inventory abd 1x2 crafting grid
+civilization.set_formspec = function(player)
+  player:set_inventory_formspec(
+    "size[5,3]"..
+    "list[current_player;main;0,0;3,3;]"..
+    "list[current_player;craft;3,0.5;1,2;]"..
+    "list[current_player;craftpreview;4,1;1,1;]")
+  player:get_inventory():set_size("main", 3*3) --NotNick's contribution
+  player:get_inventory():set_width("craft", 1)
+  player:get_inventory():set_size("craft", 2)
 end
-
+--set formspec
 minetest.register_on_joinplayer(function(player)
   if not minetest.setting_getbool("creative_mode") == false then
     return
   end
-  no_craft.set_creative_formspec(player, 0, 1)
+  civilization.set_formspec(player, 0, 1)
 end)
 
 minetest.register_on_dignode(function(pos, newnode, placer, oldnode)
@@ -19,8 +60,7 @@ minetest.register_on_dignode(function(pos, newnode, placer, oldnode)
     print(newnode.name)
   end
 end)
-
---oddly breakable by hand is no longer allowed
+--oddly breakable by hand is no longer allowed. Tools are required
 minetest.register_item(":", {
   type = "none",
   wield_image = "wieldhand.png",
@@ -35,107 +75,11 @@ minetest.register_item(":", {
     }
   }
 })
-
---craft node in which you can craft items automatically.
-function autocraft(inventory)
-	local recipe=inventory:get_list("recipe")
-	local result
-	local new
-	
-	for i=1,9 do
-		recipe[i]=ItemStack({name=recipe[i]:get_name(),count=1})
-	end
-	result,new=minetest.get_craft_result({method="normal",width=3,items=recipe})
-	if result.item:is_empty() then return end
-	result=result.item
-	if not inventory:room_for_item("dst", result) then return end
-	local input=inventory:get_list("input")
-	local to_use={}
-	for _,item in ipairs(recipe) do
-		if item~=nil and not item:is_empty() then
-			if to_use[item:get_name()]==nil then
-				to_use[item:get_name()]=1
-			else
-				to_use[item:get_name()]=to_use[item:get_name()]+1
-			end
-		end
-	end
-	local stack
-	for itemname,number in pairs(to_use) do
-		stack=ItemStack({name=itemname, count=number})
-		if not inventory:contains_item("src",stack) then return end
-	end
-	for itemname,number in pairs(to_use) do
-		stack=ItemStack({name=itemname, count=number})
-		inventory:remove_item("src",stack)
-	end
-	inventory:add_item("dst",result)
-	for i=1,9 do
-		inventory:add_item("dst",new.items[i])
-	end
-end
-
-minetest.register_node("civilization:factory",{
-	description = "Craft items (automatically)",
-	drawtype="normal",
-	tiles={"civilization_factory.png"},
-	groups={cracky=1,tubedevice=1,tubedevice_receiver=1},
-	tube={insert_object=function(pos,node,stack,direction)
-			local meta=minetest.env:get_meta(pos)
-			local inv=meta:get_inventory()
-			return inv:add_item("src",stack)
-		end,
-		can_insert=function(pos,node,stack,direction)
-			local meta=minetest.env:get_meta(pos)
-			local inv=meta:get_inventory()
-			return inv:room_for_item("src",stack)
-		end,
-		input_inventory="dst"},
-	on_construct = function(pos)
-		local meta = minetest.env:get_meta(pos)
-		meta:set_string("formspec",
-				"size[6.5,7]"..
-				"label[0,-0.1;Inventory]"..
-				"list[current_player;main;0,0.5;3,3;]"..
-				"label[0,3.4;Recipe(Craft)]"..
-				"list[current_name;recipe;0,4;3,3;]"..
-				"label[3.5,-0.1;Input]"..
-				"list[current_name;src;3.5,0.5;3,3;]"..
-				"label[3.5,3.4;Output]"..
-				"list[current_name;dst;3.5,4;3,3;]")
-		meta:set_string("infotext", "Factory")
-		local inv = meta:get_inventory()
-		inv:set_size("src",3*3)
-		inv:set_size("recipe",3*3)
-		inv:set_size("dst",3*3)
-	end,
-	can_dig = function(pos,player)
-		local meta = minetest.env:get_meta(pos);
-		local inv = meta:get_inventory()
-		return (inv:is_empty("src") and inv:is_empty("recipe") and inv:is_empty("dst"))
-	end})
-
-minetest.register_abm({
-  nodenames={"civilization:factory"},
-  interval=3,
-  chance=1,
-  action=function(pos,node)
-    local meta=minetest.env:get_meta(pos)
-    local inv=meta:get_inventory()
-    autocraft(inv)
-  end
-})
-			
-minetest.register_craft({
-  output = 'civilization:factory',
-  recipe = {
-    {'default:mese', 'default:steel_ingot', 'default:mese'},
-    {'default:steel_ingot', 'default:steel_ingot', 'default:steel_ingot'},
-    {'default:mese', 'default:steel_ingot', 'default:mese'},
-  }
-})
-
---give two tree so first wood tool can be crafted
+--give the wood age crafting.
 minetest.register_on_newplayer(function(player)
-	player:get_inventory():add_item('main', 'default:tree 2')
+  
+  player:get_inventory():add_item('main', "civilization:".."Wood")
+  player:get_inventory():add_item('main', 'default:tree 2')
 end)
+
+print("["..mod_name.."]".."Loaded!")

@@ -8,12 +8,23 @@
 
 BY:             bas080
 DESCRIPTION:    Civilization minetest mod aims for collaborative gameplay
-VERSION:        0.1
+VERSION:        0.5
 LICENCE:        WTFPL
 FORUM:          http://forum.minetest.net/viewtopic.php?id=4542
 
 Changelog
 ---------
+1.0
+* Crafting mod nodes that only allow crafting the nodes of that mod
+* Resize the inventory to something larger.
+* Includes an API so modders can implement mods. This includes:
+  - Define a craft for the mod node (modders have to choose what age craft they want to use)
+  - Tiles to define the apperearence
+
+0.5
+* Carfting age nodes that only allow crafts of certain types of nodes belonging to that age
+* Includes a function which easily allows to add new ages
+
 0.1
 * Removes craft grid from inventory
 * Reduces inventory size to 9 slots
