@@ -16,19 +16,19 @@ civilization.register_age_node({
 civilization.register_age_node({
   name = "Stone",
   tiles = "default_cobble.png",
-  nodes = {"default:stone", "default:cobble"}
+  nodes = {"default:stone", "default:cobble", "default:desert_stone"}
 })
 
 civilization.register_age_node({
   name = "Bronze",
   tiles = "default_bronze_block.png",
-  nodes = {"default:bronze_ingot", "default:bronzeblock"}
+  nodes = {"default:stone_with_copper", "default:bronze_ingot", "default:bronzeblock"}
 })
 
 civilization.register_age_node({
   name = "Iron",
   tiles = "default_steel_block.png",
-  nodes = {"default:steel_ingot", "default:iron_lump", "default:steelblock"}
+  nodes = {"default:stone_with_iron", "default:steel_ingot", "default:iron_lump", "default:steelblock"}
 })
 
 civilization.register_age_node({
@@ -36,6 +36,16 @@ civilization.register_age_node({
   tiles = "default_mese_block.png",
   nodes = {"default:mese", "default:mese_crystal", "default:mese_crystal_fragment"}
 })
+
+civilization.register_mod_node({
+  name = "Stair Crafter",
+  mod = "stairs",
+  recipe = {
+    {'', '', ''},
+    {'', '', ''}},
+  tiles = "default_wood.png^stairs_crafter.png",
+})
+
 --define smaller inventory abd 1x2 crafting grid
 civilization.set_formspec = function(player)
   player:set_inventory_formspec(

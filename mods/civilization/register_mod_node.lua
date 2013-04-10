@@ -1,24 +1,22 @@
 --THIS API IS WIP
 --IT WILL ALLOW TO MAKE A CRAFTING NODE FOR A MOD
 --def
---recipe
---mod name
---formspec
+  --recipe
+  --mod name
+  --formspec
 
 civilization.register_mod_node = function(def)
+  local node_name = "civilization:"..def.mod
   --craft
   minetest.register_craft({
-	output = 'bucket:bucket_empty 1',
-	recipe = {
-		{'default:steel_ingot', '', 'default:steel_ingot'},
-		{'', 'default:steel_ingot', ''},
-	}
+    output = node_name..' 1',
+    recipe = def.recipe,
   })
   --node
-  minetest.register_node("civilization:"..def.name,{
-    description = def.name.." Age",
+  minetest.register_node(node_name,{
+    description = def.name,
     drawtype="normal",
-    tiles={def.tiles.."^civilization_factory.png"},
+    tiles={def.tiles},
     groups={cracky=1},
     on_construct = function(pos)
       local meta = minetest.env:get_meta(pos)
@@ -28,7 +26,7 @@ civilization.register_mod_node = function(def)
         "list[current_player;main;1,0;3,3;]"..
         "list[current_name;recipe;4.5,0;3,3;]"..
         "list[current_name;dst;7.5,1;1,1;]")
-      meta:set_string("infotext", def.name.." Craft")
+      meta:set_string("infotext", def.name)
       local inv = meta:get_inventory()
       inv:set_size("recipe",3*3)
       inv:set_size("dst",1)
@@ -66,19 +64,16 @@ civilization.register_mod_node = function(def)
         local recipe
         print("inventory mode")
         if tablelist then
-          for _,item in ipairs(tablelist) do
-            local name = item:get_name()
-            if string.find(dump(def.nodes), name) or string.find(dump(civilization.common_age_nodes), name) or name == "" then
-            else
-              inv:set_stack("dst", 1, nil)
-              return
-            end
-          end
           crafted = minetest.get_craft_result({method = "normal", width = 3, items = tablelist})
         end
 
         if crafted then
-          inv:set_stack("dst", 1, crafted.item)
+          if not string.find(dump(crafted.item:get_name()), def.mod..":") then
+            inv:set_stack("dst", 1, nil)
+            return 
+          else
+            inv:set_stack("dst", 1, crafted.item)
+          end
         else
           inv:set_stack("dst", 1, nil)
         end
@@ -93,19 +88,16 @@ civilization.register_mod_node = function(def)
         print("inventory put")
         
         if tablelist then
-          for _,item in ipairs(tablelist) do
-            local name = item:get_name()
-            if string.find(dump(def.nodes), name) or string.find(dump(civilization.common_age_nodes), name) or name == "" then
-            else
-              inv:set_stack("dst", 1, nil)
-              return
-            end
-          end
           crafted = minetest.get_craft_result({method = "normal", width = 3, items = tablelist})
         end
 
         if crafted then
-          inv:set_stack("dst", 1, crafted.item)
+          if not string.find(dump(crafted.item:get_name()), def.mod..":") then
+            inv:set_stack("dst", 1, nil)
+            return 
+          else
+            inv:set_stack("dst", 1, crafted.item)
+          end
         else
           inv:set_stack("dst", 1, nil)
         end
@@ -120,19 +112,16 @@ civilization.register_mod_node = function(def)
         print("inventory take")
         
         if tablelist then
-          for _,item in ipairs(tablelist) do
-            local name = item:get_name()
-            if string.find(dump(def.nodes), name) or string.find(dump(civilization.common_age_nodes), name) or name == "" then
-            else
-              inv:set_stack("dst", 1, nil)
-              return
-            end
-          end
           crafted = minetest.get_craft_result({method = "normal", width = 3, items = tablelist})
         end
 
         if crafted then
-          inv:set_stack("dst", 1, crafted.item)
+          if not string.find(dump(crafted.item:get_name()), def.mod..":") then
+            inv:set_stack("dst", 1, nil)
+            return 
+          else
+            inv:set_stack("dst", 1, crafted.item)
+          end
         else
           inv:set_stack("dst", 1, nil)
         end
@@ -142,24 +131,27 @@ civilization.register_mod_node = function(def)
         local tablelist = inv:get_list("recipe")
         local crafted = nil
         local table_dec = nil
-
         if tablelist then
           crafted,table_dec = minetest.get_craft_result({method = "normal", width = 3, items = tablelist})
         end
-
         if table_dec then
           inv:set_list("recipe", table_dec.items)
         else
           inv:set_list("recipe", nil)
         end
-
         local tablelist = inv:get_list("recipe")
-
         if tablelist then
           crafted,table_dec = minetest.get_craft_result({method = "normal", width = 3, items = tablelist})
         end
-
         if crafted then
+          
+          if not string.find(dump(crafted.item:get_name()), def.mod..":") then
+            inv:set_stack("dst", 1, nil)
+            return 
+          else
+            inv:set_stack("dst", 1, crafted.item)
+          end
+          
           inv:set_stack("dst", 1, crafted.item)
         else
           inv:set_stack("dst", 1, nil)

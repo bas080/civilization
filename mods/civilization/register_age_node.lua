@@ -2,12 +2,12 @@ civilization.register_age_node = function(def)
   local node_name = "civilization:"..def.name
   --craft
   minetest.register_craft({
-	output = node_name..' 1',
-	recipe = {
-		{def.nodes[1], '', def.nodes[1]},
-		{'', '', ''},
-		{def.nodes[1], '', def.nodes[1]},
-	}
+    output = node_name..' 1',
+    recipe = {
+      {def.nodes[1], '', def.nodes[1]},
+      {'', '', ''},
+      {def.nodes[1], '', def.nodes[1]},
+    }
   })
   --node
   minetest.register_node(node_name,{
@@ -125,7 +125,6 @@ civilization.register_age_node = function(def)
           end
           crafted = minetest.get_craft_result({method = "normal", width = 3, items = tablelist})
         end
-
         if crafted then
           inv:set_stack("dst", 1, crafted.item)
         else
@@ -137,23 +136,18 @@ civilization.register_age_node = function(def)
         local tablelist = inv:get_list("recipe")
         local crafted = nil
         local table_dec = nil
-
         if tablelist then
           crafted,table_dec = minetest.get_craft_result({method = "normal", width = 3, items = tablelist})
         end
-
         if table_dec then
           inv:set_list("recipe", table_dec.items)
         else
           inv:set_list("recipe", nil)
         end
-
         local tablelist = inv:get_list("recipe")
-
         if tablelist then
           crafted,table_dec = minetest.get_craft_result({method = "normal", width = 3, items = tablelist})
         end
-
         if crafted then
           inv:set_stack("dst", 1, crafted.item)
         else
